@@ -8,10 +8,10 @@
 		"HA93GL"
 	],
 	"contact": {
-		"homepage": "dont have one yet",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://www.github.com/HA93GL-MC/swap-assist-ha93gl/",
+		"sources": "https://www.github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "Not licensed yet",
+	"license": "All Rights Reserved",
 	"icon": "assets/swap-assist-ha93gl/icon.png",
 	"environment": "*",
 	"entrypoints": {
