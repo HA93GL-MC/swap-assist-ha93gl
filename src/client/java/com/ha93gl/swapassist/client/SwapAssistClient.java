@@ -1,5 +1,7 @@
 package com.ha93gl.swapassist.client;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
@@ -15,6 +17,18 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class SwapAssistClient implements ClientModInitializer {
     private static final float READY_ATTACK_STRENGTH = 1.0F;
+    private static final Identifier ATTRIBUTE_SELECTION =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "attribute_selection");
+
+    private static final Identifier ATTACK_SELECTION =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "attack_selection");
+
+    private static final Identifier HOTBAR_SELECTION_ATTRIBUTE =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "hotbar_selection_attribute");
+
+    private static final Identifier HOTBAR_SELECTION_ATTACK =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "hotbar_selection_attack");
+
     private static final Identifier HUD_ELEMENT_ID = Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "status");
     private static final KeyMapping.Category SWAP_ASSIST_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "swap_assist")
@@ -82,9 +96,56 @@ public class SwapAssistClient implements ClientModInitializer {
             return false;
         });
 
-        HudElementRegistry.addLast(HUD_ELEMENT_ID, (graphics, tickCounter) -> renderStatus(graphics, Minecraft.getInstance()));
+        HudElementRegistry.addLast(
+                HUD_ELEMENT_ID,
+                (graphics, tickCounter) -> {
+                    Minecraft client = Minecraft.getInstance();
+                    renderStatus(graphics, client);
+                    renderSlotOverlays(graphics, client);
+                }
+        );
     }
 
+    private static void renderSlotOverlays(GuiGraphicsExtractor graphics, Minecraft client) {
+        if (client.player == null || client.options.hideGui) {
+            return;
+        }
+
+        int centerX = graphics.guiWidth() / 2;
+        int x = centerX - 91;
+        int y = graphics.guiHeight() - 23;
+
+        int selectedSlot = client.player.getInventory().getSelectedSlot();
+
+        // Attribute slot overlay (only in fixed attribute mode)
+        if (swapMode.usesFixedAttributeSlot
+        && fixedAttributeSlot != Inventory.NOT_FOUND_INDEX) {
+            boolean attributeSelected = selectedSlot == fixedAttributeSlot;
+
+            graphics.blitSprite(
+                    RenderPipelines.GUI_TEXTURED,
+                    attributeSelected ? HOTBAR_SELECTION_ATTRIBUTE : ATTRIBUTE_SELECTION,
+                    x + fixedAttributeSlot * 20 + (attributeSelected ? -1 : 1),
+                    y + (attributeSelected ? -1 : 2),
+                    attributeSelected ? 24 : 20,
+                    attributeSelected ? 24 : 20
+            );
+        }
+
+        // Attack slot overlay
+        if (attackSlot != Inventory.NOT_FOUND_INDEX) {
+            boolean attackSelected = selectedSlot == attackSlot;
+
+            graphics.blitSprite(
+                    RenderPipelines.GUI_TEXTURED,
+                    attackSelected ? HOTBAR_SELECTION_ATTACK : ATTACK_SELECTION,
+                    x + attackSlot * 20 + (attackSelected ? -1 : 1),
+                    y + (attackSelected ? -1 : 2),
+                    attackSelected ? 24 : 20,
+                    attackSelected ? 24 : 20
+            );
+        }
+    }
     private static void toggleSwapAssist(Minecraft client) {
         if (client.player == null) {
             return;
@@ -285,9 +346,9 @@ public class SwapAssistClient implements ClientModInitializer {
     }
 
     private enum SwapMode {
-        DELAY_2_TICKS("2 Tick Restore", "2T", 2, true, false),
+        DELAY_2_TICKS("2 Tick Restore", "2T", 1, true, false),
         NO_RESTORE("No Restore", "NR", 0, false, false),
-        FIXED_ATTRIBUTE("Fixed Attribute", "FA", 2, true, true);
+        FIXED_ATTRIBUTE("Fixed Attribute", "FA", 1, true, true);
 
         private final String label;
         private final String shortLabel;
