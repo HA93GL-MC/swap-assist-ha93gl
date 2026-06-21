@@ -1,5 +1,9 @@
 {
-  "category.swap-assist-ha93gl.swap_assist": "Swap Assist",
+  "key.category.minecraft.swap-assist-ha93gl": "Swap Assist",
+  "key.categories.swap-assist-ha93gl.swap_assist": "Swap Assist",
+  "key.category.swap-assist-ha93gl.main": "Swap Assist",
+
   "key.swap-assist-ha93gl.swap_assist": "Toggle Swap Assist",
-  "key.swap-assist-ha93gl.swap_mode": "Change Swap Mode"
+  "key.swap-assist-ha93gl.swap_mode": "Change Swap Mode",
+  "key.swap-assist-ha93gl.preselect_slots": "Preselect Slots"
 }

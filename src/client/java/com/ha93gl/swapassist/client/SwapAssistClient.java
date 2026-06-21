@@ -1,5 +1,6 @@
 package com.ha93gl.swapassist.client;
 
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -42,7 +43,7 @@ public class SwapAssistClient implements ClientModInitializer {
 
     private static final Identifier HUD_ELEMENT_ID = Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "status");
     private static final KeyMapping.Category SWAP_ASSIST_CATEGORY =
-            KeyMapping.Category.register(Identifier.parse("swap-assist-ha93gl"));
+            KeyMapping.Category.register(Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "main"));
 
 
     private static KeyMapping swapAssistKey;
@@ -60,26 +61,26 @@ public class SwapAssistClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        swapAssistKey = new KeyMapping(
+        swapAssistKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.swap-assist-ha93gl.swap_assist",
                 InputConstants.Type.KEYSYM,
                 InputConstants.KEY_R,
                 SWAP_ASSIST_CATEGORY
-        );
+        ));
 
-        swapModeKey = new KeyMapping(
+        swapModeKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.swap-assist-ha93gl.swap_mode",
                 InputConstants.Type.KEYSYM,
                 InputConstants.KEY_G,
                 SWAP_ASSIST_CATEGORY
-        );
+        ));
 
-        preselectSlotsKey = new KeyMapping(
+        preselectSlotsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.swap-assist-ha93gl.preselect_slots",
                 InputConstants.Type.KEYSYM,
                 InputConstants.KEY_V,
                 SWAP_ASSIST_CATEGORY
-        );
+        ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (swapAssistKey.consumeClick()) {
@@ -161,7 +162,7 @@ public class SwapAssistClient implements ClientModInitializer {
 
         // Attribute slot overlay (only in fixed attribute mode)
         if (swapMode.usesFixedAttributeSlot
-        && fixedAttributeSlot != Inventory.NOT_FOUND_INDEX) {
+                && fixedAttributeSlot != Inventory.NOT_FOUND_INDEX) {
             boolean attributeSelected = selectedSlot == fixedAttributeSlot;
 
             graphics.blitSprite(
