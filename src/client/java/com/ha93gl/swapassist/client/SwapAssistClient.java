@@ -6,7 +6,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -42,9 +41,9 @@ public class SwapAssistClient implements ClientModInitializer {
             Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "na");
 
     private static final Identifier HUD_ELEMENT_ID = Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "status");
-    private static final KeyMapping.Category SWAP_ASSIST_CATEGORY = KeyMapping.Category.register(
-            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "swap_assist")
-    );
+    private static final KeyMapping.Category SWAP_ASSIST_CATEGORY =
+            KeyMapping.Category.register(Identifier.parse("swap-assist-ha93gl"));
+
 
     private static KeyMapping swapAssistKey;
     private static KeyMapping swapModeKey;
@@ -61,24 +60,26 @@ public class SwapAssistClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        swapAssistKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        swapAssistKey = new KeyMapping(
                 "key.swap-assist-ha93gl.swap_assist",
                 InputConstants.Type.KEYSYM,
                 InputConstants.KEY_R,
                 SWAP_ASSIST_CATEGORY
-        ));
-        swapModeKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        );
+
+        swapModeKey = new KeyMapping(
                 "key.swap-assist-ha93gl.swap_mode",
                 InputConstants.Type.KEYSYM,
                 InputConstants.KEY_G,
                 SWAP_ASSIST_CATEGORY
-        ));
-        preselectSlotsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        );
+
+        preselectSlotsKey = new KeyMapping(
                 "key.swap-assist-ha93gl.preselect_slots",
                 InputConstants.Type.KEYSYM,
                 InputConstants.KEY_V,
                 SWAP_ASSIST_CATEGORY
-        ));
+        );
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (swapAssistKey.consumeClick()) {
