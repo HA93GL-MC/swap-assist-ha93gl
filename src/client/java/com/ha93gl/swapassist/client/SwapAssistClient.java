@@ -29,6 +29,18 @@ public class SwapAssistClient implements ClientModInitializer {
     private static final Identifier HOTBAR_SELECTION_ATTACK =
             Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "hotbar_selection_attack");
 
+    private static final Identifier MODE_1T =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "1t");
+
+    private static final Identifier MODE_NR =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "nr");
+
+    private static final Identifier MODE_FA =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "fa");
+
+    private static final Identifier MODE_NA =
+            Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "na");
+
     private static final Identifier HUD_ELEMENT_ID = Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "status");
     private static final KeyMapping.Category SWAP_ASSIST_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("swap-assist-ha93gl", "swap_assist")
@@ -100,9 +112,38 @@ public class SwapAssistClient implements ClientModInitializer {
                 HUD_ELEMENT_ID,
                 (graphics, tickCounter) -> {
                     Minecraft client = Minecraft.getInstance();
-                    renderStatus(graphics, client);
                     renderSlotOverlays(graphics, client);
+                    renderModeIndicator(graphics, client);
                 }
+        );
+    }
+
+    private static void renderModeIndicator(GuiGraphicsExtractor graphics, Minecraft client) {
+        if (client.player == null || client.options.hideGui) {
+            return;
+        }
+
+        Identifier texture;
+
+        if (!swapAssistEnabled) {
+            texture = MODE_NA;
+        } else {
+            texture = switch (swapMode) {
+                case DELAY_2_TICKS -> MODE_1T;
+                case NO_RESTORE -> MODE_NR;
+                case FIXED_ATTRIBUTE -> MODE_FA;
+            };
+        }
+
+        int centerX = graphics.guiWidth() / 2;
+
+        graphics.blitSprite(
+                RenderPipelines.GUI_TEXTURED,
+                texture,
+                centerX - 50,
+                5,
+                100,
+                20
         );
     }
 
@@ -346,7 +387,7 @@ public class SwapAssistClient implements ClientModInitializer {
     }
 
     private enum SwapMode {
-        DELAY_2_TICKS("2 Tick Restore", "2T", 1, true, false),
+        DELAY_2_TICKS("1 Tick Restore", "1T", 1, true, false),
         NO_RESTORE("No Restore", "NR", 0, false, false),
         FIXED_ATTRIBUTE("Fixed Attribute", "FA", 1, true, true);
 
